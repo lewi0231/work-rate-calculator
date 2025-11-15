@@ -12,7 +12,7 @@ const Nav = () => {
   return (
     <nav
       className={cn(
-        "fixed w-full flex items-center justify-between px-10 py-4   transition-all duration-500 backdrop-blur-2xl -translate-y-20",
+        "fixed w-full flex items-center justify-between px-10 py-8   transition-all duration-500 backdrop-blur-2xl -translate-y-20",
         isTop ? "opacity-100 translate-y-0" : "opacity-0"
       )}
     >

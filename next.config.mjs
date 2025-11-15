@@ -40,6 +40,7 @@ const nextConfig = {
             options: {
               icon: false,
               dimensions: false,
+              svgo: false,
               svgProps: {
                 className: "{props.className}",
               },
@@ -52,6 +53,30 @@ const nextConfig = {
         as: "*.js",
       },
     },
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.svg$/i,
+      issuer: /\.[jt]sx?$/,
+      use: [
+        {
+          loader: "@svgr/webpack",
+          options: {
+            icon: false,
+            dimensions: false,
+            svgo: false,
+            svgProps: {
+              className: "{props.className}",
+            },
+            replaceAttrValues: {
+              "#141a46": "currentColor",
+            },
+          },
+        },
+      ],
+    });
+
+    return config;
   },
 };
 

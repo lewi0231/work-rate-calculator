@@ -109,7 +109,7 @@ const SchedulerPage = () => {
   };
 
   return (
-    <main className="w-full min-h-screen flex flex-col justify-start items-start max-w-[1200px] mx-auto pt-20 pb-12 space-y-10">
+    <main className="w-full min-h-screen flex flex-col justify-start items-start max-w-[1200px] mx-auto pb-12 space-y-10">
       <GeneralSettingsDisplay
         maxHoursPerDay={maxHoursPerDay}
         earliestStartTime={earliestStartTime}

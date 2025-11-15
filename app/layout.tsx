@@ -40,7 +40,7 @@ export default function RootLayout({
         // }}
       >
         <Nav />
-        <main className="flex-grow p-4">{children}</main>
+        <main className="flex-grow p-4 mt-20">{children}</main>
         <Footer />
       </body>
     </html>

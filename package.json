@@ -36,6 +36,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "typecheck": "tsc -noEmit",
     "docker:dev": "docker-compose -f docker-compose.dev.yml up --build",
     "docker:dev:down": "docker-compose -f docker-compose.dev.yml down",
     "docker:build": "docker build -t work-rate-calculator .",
