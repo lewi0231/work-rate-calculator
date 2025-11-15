@@ -1,5 +1,5 @@
 # Use Node.js alpine as base image instead of plain alpine
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -39,7 +39,7 @@ ENV NEXT_PUBLIC_ENABLE_CONSOLE_LOGS=$NEXT_PUBLIC_ENABLE_CONSOLE_LOGS
 RUN pnpm build
 
 # Production image
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Set to production environment
