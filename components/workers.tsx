@@ -12,28 +12,28 @@ function Workers({
   shiftLength,
 }: {
   defaultRate: number;
-  shiftLength: number;
+  shiftLength: { decimalFormat: number; displayFormat: string };
 }) {
   const [workers, setWorkers] = useState<Worker[]>([]);
 
   const handleUpdateWorker = (index: number, updates: Partial<Worker>) => {
-    const workerShiftLength =
-      updates?.shiftLength !== undefined
-        ? Math.min(updates.shiftLength, shiftLength)
-        : updates.shiftLength;
-
     setWorkers((prev) =>
-      prev.map((worker, i) =>
-        i === index
-          ? { ...worker, ...updates, shiftLength: workerShiftLength }
-          : worker
-      )
+      prev.map((worker, i) => {
+        if (i !== index) return worker;
+
+        const workerShiftLength =
+          updates?.shiftLength !== undefined
+            ? Math.min(updates.shiftLength, shiftLength.decimalFormat)
+            : worker.shiftLength;
+
+        return { ...worker, ...updates, shiftLength: workerShiftLength };
+      })
     );
   };
 
   const onAddWorker = (id: number, { name, rate }: WorkerType) => {
     setWorkers((prev) => {
-      return [...prev, { name, rate, shiftLength }];
+      return [...prev, { name, rate, shiftLength: shiftLength.decimalFormat }];
     });
   };
 
@@ -50,7 +50,10 @@ function Workers({
 
   useEffect(() => {
     setWorkers((prev) => {
-      return prev.map((worker) => ({ ...worker, shiftLength }));
+      return prev.map((worker) => ({
+        ...worker,
+        shiftLength: shiftLength.decimalFormat,
+      }));
     });
   }, [shiftLength]);
 
@@ -70,20 +73,22 @@ function Workers({
       )}
 
       {workers?.length > 0
-        ? calculatePercentages(workers, defaultRate, shiftLength).map(
-            (worker, index) => {
-              console.log(worker.name, index);
-              return (
-                <DisplayWorker
-                  key={index + worker.name}
-                  index={index}
-                  onRemoveWorker={onRemoveWorker}
-                  worker={worker}
-                  onUpdateWorker={handleUpdateWorker}
-                />
-              );
-            }
-          )
+        ? calculatePercentages(
+            workers,
+            defaultRate,
+            shiftLength.decimalFormat
+          ).map((worker, index) => {
+            console.log(worker.name, index);
+            return (
+              <DisplayWorker
+                key={index + worker.name}
+                index={index}
+                onRemoveWorker={onRemoveWorker}
+                worker={worker}
+                onUpdateWorker={handleUpdateWorker}
+              />
+            );
+          })
         : ""}
       {workers?.length > 0 ? (
         <div className="mt-4 flex justify-end">

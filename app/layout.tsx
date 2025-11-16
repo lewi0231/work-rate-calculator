@@ -30,17 +30,13 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "min-h-screen flex flex-col",
+          "min-h-screen flex flex-col bg-gradient-to-r from-gray-200 to-gray-100",
           bebas.variable,
           cousine.variable
         )}
-        // style={{
-        //   paddingRight: "0px important!",
-        //   paddingLeft: "0px important!",
-        // }}
       >
         <Nav />
-        <main className="flex-grow p-4 mt-20">{children}</main>
+        <main className="flex-grow p-4 mt-24">{children}</main>
         <Footer />
       </body>
     </html>

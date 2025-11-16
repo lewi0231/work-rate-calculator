@@ -49,7 +49,7 @@ const TimePicker = ({
           step="1"
           value={inputValue}
           onChange={handleChange}
-          className="peer bg-background appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+          className="peer bg-background appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-primary"
           aria-label={ariaLabel || label}
         />
       </div>

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: work-rate-calculator
+  namespace: production
+spec:
+  selector:
+    matchLabels:
+      app: work-rate-calculator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: work-rate-calculator
+    spec:
+      imagePullSecrets:
+        - name: ghcr-credentials
+      containers:
+        - name: work-rate-calculator
+          image: ghcr.io/lewi0231/home-lab-automation-work-rate-calculator:v1.0.25 # {"$imagepolicy": "production:work-rate-calculator"}
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: work-rate-calculator
+  namespace: production
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: work-rate-calculator

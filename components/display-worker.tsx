@@ -1,6 +1,6 @@
 "use client";
 
-import { formatToTwoDecimals } from "@/lib/utils";
+import { formatDecimalHoursToTime, formatToTwoDecimals } from "@/lib/utils";
 import { Worker } from "@/types/worker";
 import { Minus, Plus } from "lucide-react";
 import { Button } from "./ui/button";
@@ -18,7 +18,7 @@ function DisplayWorker({
   onRemoveWorker,
   onUpdateWorker,
 }: Props) {
-  const ADD_SUBTRACT_VALUE = 0.25;
+  const ADD_SUBTRACT_VALUE = 0.083;
 
   const incrementShift = () => {
     const newShiftLength = worker.shiftLength + ADD_SUBTRACT_VALUE;
@@ -45,7 +45,7 @@ function DisplayWorker({
           <Minus className="" />
         </Button>
         <span className="min-w-[2rem] text-right">
-          {formatToTwoDecimals(worker.shiftLength)}
+          {formatDecimalHoursToTime(worker.shiftLength ?? 0)}
         </span>
         <Button
           size="sm"
