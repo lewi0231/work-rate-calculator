@@ -2,6 +2,11 @@ import AddNameField from "@/components/add-name-field";
 import Header from "@/components/header";
 import SelectCarYardRegion from "@/components/select-region";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { AVAILABILITY_HEADINGS, DAYS_OF_WEEK } from "@/lib/constants";
 import { ScheduleRequestPayload } from "@/lib/scheduler";
 import { cn } from "@/lib/utils";
@@ -57,31 +62,39 @@ const EmployeeAvailabilityDisplay = ({
       </Header>
       <div className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))_minmax(4rem,1fr)]">
         <div className="border-r" />
-        {AVAILABILITY_HEADINGS.map((heading, index) => (
+        {AVAILABILITY_HEADINGS.map((headingObj, index) => (
           <div
             className={cn(
               " text-muted-foreground font-medium text-sm  w-full flex justify-center items-center py-4",
               [5, 6].includes(index) ? "border-r" : ""
             )}
-            key={heading}
+            key={headingObj.heading}
           >
-            <span className=" text-center font-medium text-wrap">
-              {heading.charAt(0).toUpperCase() + heading.substring(1)}
-            </span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className=" text-center font-medium text-wrap cursor-help">
+                  {headingObj.heading.charAt(0).toUpperCase() +
+                    headingObj.heading.substring(1)}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{headingObj.tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         ))}
       </div>
-      <div className="w-full flex flex-col divide-y">
+      <div className="w-full flex flex-col gap-4">
         {workers.map((worker) => (
           <div
             key={worker.id}
-            className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))_minmax(4rem,1fr)] w-full py-4"
+            className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))_minmax(4rem,1fr)] w-full py-2 border-2 border-foreground/10 rounded-md bg-muted/50"
           >
-            <div className="font-medium border-r">{worker.name}</div>
+            <div className="font-medium border-r  py-2 pl-2">{worker.name}</div>
             {DAYS_OF_WEEK.map((day) => (
               <div
                 key={`${worker.id}-${day}`}
-                className="w-full flex justify-center items-center "
+                className="w-full flex justify-center items-center"
               >
                 <Checkbox
                   checked={worker.available_days.includes(day)}
@@ -89,10 +102,11 @@ const EmployeeAvailabilityDisplay = ({
                     handleToggleAvailability(worker.id, day, Boolean(checked))
                   }
                   aria-label={`${worker.name} available on ${day}`}
+                  className="border-2 border-foreground/30 data-[state=checked]:border-primary"
                 />
               </div>
             ))}
-            <div className="flex items-center justify-center border-l overflow-hidden">
+            <div className="flex items-center justify-center border-l overflow-hidden ">
               <SelectCarYardRegion
                 worker={worker}
                 handleUpdateWorker={(region) =>
@@ -103,7 +117,7 @@ const EmployeeAvailabilityDisplay = ({
                 }
               />
             </div>
-            <div className="flex items-center justify-center border-l">
+            <div className="flex items-center justify-center border-l ">
               <Checkbox
                 checked={worker.ranking === "below_average"}
                 onCheckedChange={(checked) =>
@@ -113,12 +127,13 @@ const EmployeeAvailabilityDisplay = ({
                   }))
                 }
                 aria-label={`${worker.name} marked as under performing`}
+                className="border-2 border-foreground/30 data-[state=checked]:border-primary"
               />
             </div>
             <div className="w-full flex justify-center items-center border-l">
               <Button
                 size="icon"
-                variant="destructive"
+                variant="ghost"
                 className="h-8 w-8 hover:opacity-50 transition-opacity duration-300 cursor-pointer"
                 onClick={() => onRemoveWorker(worker.id)}
               >

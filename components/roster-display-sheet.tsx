@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScheduleResponse } from "@/lib/scheduler";
+import { Download } from "lucide-react";
+import { Button } from "./ui/button";
 
 type Props = {
   isOpen: boolean;
@@ -41,16 +43,19 @@ export function RosterDisplaySheet({
               className="flex flex-1 flex-col min-h-0"
             >
               <TabsList className="w-full justify-start mb-4">
-                <TabsTrigger value="by-day" className="flex-1">
+                <TabsTrigger value="by-day" className="flex-1 cursor-pointer">
                   By Day
                 </TabsTrigger>
-                <TabsTrigger value="by-employee" className="flex-1">
+                <TabsTrigger
+                  value="by-employee"
+                  className="flex-1 cursor-pointer"
+                >
                   By Employee
                 </TabsTrigger>
               </TabsList>
               <TabsContent
                 value="by-day"
-                className="flex-1 min-h-0 overflow-y-auto"
+                className="flex-1 min-h-0 overflow-y-auto border-2 border-foreground/10 rounded-md px-4"
               >
                 {hasRosterData ? (
                   <RosterTimetable days={rosterData.roster.days} />
@@ -65,7 +70,10 @@ export function RosterDisplaySheet({
                 className="flex-1 min-h-0 overflow-y-auto"
               >
                 {hasAssignments ? (
-                  <RosterEmployeeView assignments={rosterData.assignments!} />
+                  <RosterEmployeeView
+                    assignments={rosterData.assignments!}
+                    stats={rosterData.stats}
+                  />
                 ) : (
                   <div className="flex items-center justify-center p-8 text-center text-muted-foreground">
                     No assignment data available.
@@ -79,6 +87,13 @@ export function RosterDisplaySheet({
             </div>
           )}
         </div>
+        <Button
+          variant="default"
+          className="my-4 text-lg w-1/4 h-20 mx-auto cursor-pointer hover:scale-110 transition-transform duration-300"
+        >
+          <Download />
+          <span>Export Roster</span>
+        </Button>
       </SheetContent>
     </Sheet>
   );

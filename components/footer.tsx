@@ -2,7 +2,7 @@ import Logo from "./logo";
 
 function Footer() {
   return (
-    <footer className="text-start py-8 text-sm w-full bg-gray-200">
+    <footer className="text-start py-8 text-sm w-full bg-linear-to-br from-gray-500 to-gray-400 px-10 text-secondary">
       <div className="flex justify-between items-center max-w-[1200px] mx-auto">
         <div className="flex gap-1 items-center justify-start">
           <Logo size="sm" logoText={["Flower", "head"]} icon="flower" />

@@ -25,3 +25,26 @@ export const formatDecimalHoursToTime = (decimalHours: number): string => {
 
   return `${hours}:${minutes.toString().padStart(2, "0")}`;
 };
+
+export const timeStringToMinutes = (timeValue: string) => {
+  const [hours = "0", minutes = "0"] = timeValue.split(":");
+  return parseInt(hours, 10) * 60 + parseInt(minutes, 10);
+};
+
+export function getShiftDurationHours(startTime: string, endTime: string) {
+  const startMinutes = timeStringToMinutes(startTime);
+  const endMinutes = timeStringToMinutes(endTime);
+  const totalMinutes = endMinutes - startMinutes;
+
+  if (totalMinutes <= 0) {
+    return { displayFormat: "00:00", decimalFormat: 0 };
+  }
+
+  const decimalValue = formatToTwoDecimals(totalMinutes / 60);
+  const displayFormat = formatDecimalHoursToTime(decimalValue);
+
+  return {
+    displayFormat,
+    decimalFormat: decimalValue,
+  };
+}

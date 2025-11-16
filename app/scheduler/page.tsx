@@ -14,6 +14,7 @@ import {
   ScheduleRequestPayload,
   ScheduleResponse,
 } from "@/lib/scheduler";
+import { Calendar } from "lucide-react";
 import { useState } from "react";
 
 const SchedulerPage = () => {
@@ -116,8 +117,14 @@ const SchedulerPage = () => {
     );
   };
 
+  const hasRosterData = rosterData?.roster && rosterData.roster.days.length > 0;
+  const hasAssignments =
+    rosterData?.assignments && rosterData.assignments.length > 0;
+  const canReopenRoster =
+    (hasRosterData || hasAssignments) && !rosterDisplayIsOpen;
+
   return (
-    <main className="w-full min-h-screen flex flex-col justify-start items-start max-w-[1200px] mx-auto pb-12 space-y-10">
+    <main className="w-full min-h-screen flex flex-col justify-start items-start max-w-[1200px] mx-auto pb-20 space-y-10 px-10 relative">
       <GeneralSettingsDisplay
         maxHoursPerDay={maxHoursPerDay}
         earliestStartTime={earliestStartTime}
@@ -140,10 +147,10 @@ const SchedulerPage = () => {
         onRemoveCarYard={handleRemoveCardYard}
       />
 
-      <div className="w-full flex justify-center pt-4">
+      <div className="w-full flex justify-center">
         <Button
           size="lg"
-          className="min-w-[200px] h-12 px-8 text-lg font-semibold cursor-pointer"
+          className="min-w-2/3 h-12 px-8 text-lg hover:animate-pulse font-semibold cursor-pointer"
           onClick={handleGenerateRoster}
           disabled={isLoading}
         >
@@ -155,6 +162,17 @@ const SchedulerPage = () => {
         onOpenChange={(newState) => setRosterDisplayIsOpen(newState)}
         rosterData={rosterData}
       />
+      {canReopenRoster && (
+        <Button
+          onClick={() => setRosterDisplayIsOpen(true)}
+          className="fixed right-4 top-1/2 -translate-y-1/2 z-40 rounded-full shadow-lg h-14 w-14 p-0 hover:scale-110 transition-transform duration-200 cursor-pointer"
+          size="icon"
+          aria-label="View generated roster"
+        >
+          <Calendar className="h-6 w-6" />
+          <span className="sr-only">View generated roster</span>
+        </Button>
+      )}
     </main>
   );
 };

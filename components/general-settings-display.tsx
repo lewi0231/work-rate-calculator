@@ -20,15 +20,15 @@ const GeneralSettingsDisplay = ({
       <Header subText="Configure general scheduling parameters that apply across all employees and car yards.">
         General Settings
       </Header>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-10 pb-4">
-        <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-10 pb-4">
+        <div className="flex flex-col gap-2 w-3/4">
           <label
             htmlFor="max-hours-per-day"
             className="text-sm font-medium text-muted-foreground"
           >
             Max Shift Length (hours)
           </label>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-muted/50 py-3 px-3 rounded-md border-2 border-foreground/10">
             <InputCounter
               min={1}
               step={0.5}
@@ -36,9 +36,9 @@ const GeneralSettingsDisplay = ({
               onValueChange={onMaxHoursPerDayChange}
               max={24}
               ariaLabel="Maximum hours per day"
-              className="max-w-[8rem]"
+              className="max-w-[8rem] border-2 border-foreground/10"
             />
-            <span className="text-sm text-muted-foreground">hours</span>
+            <span className="text-sm text-muted-foreground ">hours</span>
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -49,6 +49,9 @@ const GeneralSettingsDisplay = ({
             id="earliest-start-time"
             ariaLabel="Earliest start time for shifts"
             className="max-w-xs"
+            labelClassName="text-muted-foreground"
+            contentClassName="border-2 border-foreground/10"
+            inputClassName="border-2 border-foreground/10"
           />
         </div>
       </div>

@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DAYS_OF_WEEK } from "@/lib/constants";
-import { Assignment, DayOfWeek } from "@/lib/scheduler";
+import { Assignment, DayOfWeek, ScheduleStats } from "@/lib/scheduler";
 
 type RosterEmployeeViewProps = {
   assignments: Assignment[];
+  stats?: ScheduleStats;
 };
 
 /**
@@ -44,16 +45,39 @@ function AssignmentCard({ assignment }: { assignment: Assignment }) {
 }
 
 /**
+ * Calculates total hours for an employee from stats
+ */
+function calculateTotalHours(
+  employeeId: number,
+  stats?: ScheduleStats
+): number | null {
+  if (!stats?.hours_per_employee_day) return null;
+
+  const prefix = `emp_${employeeId}_day_`;
+  let total = 0;
+
+  for (const [key, hours] of Object.entries(stats.hours_per_employee_day)) {
+    if (key.startsWith(prefix)) {
+      total += hours;
+    }
+  }
+
+  return total > 0 ? total : null;
+}
+
+/**
  * EmployeeScheduleCard displays all assignments for a single employee
  */
 function EmployeeScheduleCard({
   employeeName,
   employeeId,
   assignments,
+  stats,
 }: {
   employeeName: string;
   employeeId: number;
   assignments: Assignment[];
+  stats?: ScheduleStats;
 }) {
   // Group assignments by day
   const assignmentsByDay = new Map<DayOfWeek, Assignment[]>();
@@ -71,6 +95,7 @@ function EmployeeScheduleCard({
 
   // Calculate total assignments for summary
   const totalAssignments = assignments.length;
+  const totalHours = calculateTotalHours(employeeId, stats);
 
   return (
     <Card className="mb-4 border bg-card shadow-sm hover:shadow-md transition-shadow">
@@ -79,10 +104,17 @@ function EmployeeScheduleCard({
           <CardTitle className="text-base font-semibold">
             {employeeName}
           </CardTitle>
-          <span className="text-xs font-medium text-muted-foreground">
-            {totalAssignments}{" "}
-            {totalAssignments === 1 ? "assignment" : "assignments"}
-          </span>
+          <div className="flex flex-col items-end gap-1">
+            {totalHours !== null && (
+              <span className="text-sm font-semibold text-foreground">
+                ~{totalHours.toFixed(1)}h
+              </span>
+            )}
+            <span className="text-xs font-medium text-muted-foreground">
+              {totalAssignments}{" "}
+              {totalAssignments === 1 ? "assignment" : "assignments"}
+            </span>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -125,7 +157,10 @@ function EmployeeScheduleCard({
  * RosterEmployeeView displays the roster organized by employee
  * showing each employee's schedule across all days
  */
-export function RosterEmployeeView({ assignments }: RosterEmployeeViewProps) {
+export function RosterEmployeeView({
+  assignments,
+  stats,
+}: RosterEmployeeViewProps) {
   if (!assignments || assignments.length === 0) {
     return (
       <div className="flex items-center justify-center p-8 text-center text-muted-foreground">
@@ -166,6 +201,7 @@ export function RosterEmployeeView({ assignments }: RosterEmployeeViewProps) {
             employeeId={id}
             employeeName={name}
             assignments={employeeAssignments}
+            stats={stats}
           />
         ))}
       </div>

@@ -42,7 +42,7 @@ function InputCounter({
       max={max}
       value={value}
       onChange={handleChange}
-      className={cn(" text-center border-none", className)}
+      className={cn(" text-center ", className)}
       aria-label={ariaLabel}
     />
   );

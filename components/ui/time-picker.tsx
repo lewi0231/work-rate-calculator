@@ -12,6 +12,9 @@ type TimePickerProps = {
   id?: string;
   className?: string;
   ariaLabel?: string;
+  labelClassName?: string;
+  contentClassName?: string;
+  inputClassName?: string;
 };
 
 const TimePicker = ({
@@ -21,6 +24,9 @@ const TimePicker = ({
   id = "time-picker",
   className,
   ariaLabel,
+  labelClassName,
+  contentClassName,
+  inputClassName,
 }: TimePickerProps) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     // Convert to HH:MM format if needed (remove seconds)
@@ -36,22 +42,31 @@ const TimePicker = ({
       : value;
 
   return (
-    <div className={cn("w-full space-y-2", className)}>
-      {label && <Label htmlFor={id}>{label}</Label>}
-      <div className="relative">
-        <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
-          <Clock8Icon className="size-4" />
-          <span className="sr-only">Time</span>
+    <div className={cn("w-full space-y-3", className)}>
+      {label && (
+        <Label htmlFor={id} className={labelClassName}>
+          {label}
+        </Label>
+      )}
+      <div className={cn("bg-muted/50 rounded-md p-3 ", contentClassName)}>
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
+            <Clock8Icon className="size-4" />
+            <span className="sr-only">Time</span>
+          </div>
+          <Input
+            type="time"
+            id={id}
+            step="1"
+            value={inputValue}
+            onChange={handleChange}
+            className={cn(
+              "peer bg-muted appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none cursor-text",
+              inputClassName
+            )}
+            aria-label={ariaLabel || label}
+          />
         </div>
-        <Input
-          type="time"
-          id={id}
-          step="1"
-          value={inputValue}
-          onChange={handleChange}
-          className="peer bg-background appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-primary"
-          aria-label={ariaLabel || label}
-        />
       </div>
     </div>
   );

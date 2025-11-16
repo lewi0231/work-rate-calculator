@@ -30,13 +30,13 @@ export default function RootLayout({
       </head>
       <body
         className={cn(
-          "min-h-screen flex flex-col bg-gradient-to-r from-gray-200 to-gray-100",
+          "min-h-screen flex flex-col bg-gray-200",
           bebas.variable,
           cousine.variable
         )}
       >
         <Nav />
-        <main className="flex-grow p-4 mt-24">{children}</main>
+        <main className="flex-grow mt-24">{children}</main>
         <Footer />
       </body>
     </html>

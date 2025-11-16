@@ -44,7 +44,12 @@ const SelectLinkedYard = ({
   return (
     <div className=" overflow-hidden w-full">
       <Select onValueChange={handleChange} value={selectedValue}>
-        <SelectTrigger className={cn("w-full h-full", triggerClassName)}>
+        <SelectTrigger
+          className={cn(
+            "w-full h-full border-2 border-foreground/10 cursor-pointer",
+            triggerClassName
+          )}
+        >
           <SelectValue placeholder={placeholder} className="" />
         </SelectTrigger>
         <SelectContent className="">

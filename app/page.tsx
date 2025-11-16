@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import TimePicker from "@/components/ui/time-picker";
 import Workers from "@/components/workers";
 import { config } from "@/lib/config";
-import { formatDecimalHoursToTime, formatToTwoDecimals } from "@/lib/utils";
+import { getShiftDurationHours } from "@/lib/utils";
 import { useMemo, useState } from "react";
 
 export default function Page() {
@@ -19,32 +19,13 @@ export default function Page() {
     console.log("Rendering Page");
   }
 
-  const timeStringToMinutes = (timeValue: string) => {
-    const [hours = "0", minutes = "0"] = timeValue.split(":");
-    return parseInt(hours, 10) * 60 + parseInt(minutes, 10);
-  };
-
-  const shiftDurationHours: { displayFormat: string; decimalFormat: number } =
-    useMemo(() => {
-      const startMinutes = timeStringToMinutes(startTime);
-      const endMinutes = timeStringToMinutes(endTime);
-      const totalMinutes = endMinutes - startMinutes;
-
-      if (totalMinutes <= 0) {
-        return { displayFormat: "00:00", decimalFormat: 0 };
-      }
-
-      const decimalValue = formatToTwoDecimals(totalMinutes / 60);
-      const displayFormat = formatDecimalHoursToTime(decimalValue);
-
-      return {
-        displayFormat,
-        decimalFormat: decimalValue,
-      };
-    }, [endTime, startTime]);
+  const shiftDurationHours = useMemo(
+    () => getShiftDurationHours(startTime, endTime),
+    [endTime, startTime]
+  );
 
   return (
-    <div className="w-full mx-auto min-w-[300px] max-w-[1200px] min-h-screen">
+    <div className="w-full mx-auto min-w-[300px] max-w-[1200px] min-h-[calc(100vh-80px)] px-10">
       <div>
         <div className="text-left m-auto py-4 space-y-4">
           <h1 className="text-4xl tracking-tight">Work Rate Calculator</h1>

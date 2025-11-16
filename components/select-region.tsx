@@ -49,7 +49,12 @@ const SelectCarYardRegion = ({
   return (
     <div className="w-full overflow-hidden">
       <Select onValueChange={handleChange} value={selectedRegion}>
-        <SelectTrigger className={cn("w-full", triggerClassName)}>
+        <SelectTrigger
+          className={cn(
+            "w-full border-2 border-foreground/10",
+            triggerClassName
+          )}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent className="">

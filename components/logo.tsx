@@ -29,13 +29,14 @@ function Logo({
   return (
     <div className={cn("flex items-center gap-[4px] justify-center")}>
       {icon === "car" ? (
-        <Car size={28} />
+        <Car size={28} color="white" />
       ) : (
-        <Flower className={cn("w-6 h-6 text-[#141a46] mb-1", iconClassName)} />
+        <Flower className={cn("w-6 h-6 text-[#ffffff] mb-1", iconClassName)} />
       )}
       <div className="flex items-center h-full">
-        <h1 className={cn("font-cousine h-full", textClassName)}>
+        <h1 className={cn("font-cousine h-full text-secondary", textClassName)}>
           <span className="leading-0 tracking-tighter">{logoText[0]}</span>
+
           <span className="leading-0 tracking-tighter">{logoText[1]}</span>
         </h1>
       </div>
