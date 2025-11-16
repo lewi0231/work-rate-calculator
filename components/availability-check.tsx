@@ -15,7 +15,10 @@ function AvailabilityCheck() {
       <ul className="grid grid-cols-8 gap-6 border-2 w-1/2">
         <div className="col-span-2"></div>
         {daysOfTheWeek.map((day) => (
-          <li className="-rotate-90 border-2 w-30 col-span-1 text-muted-foreground mb-12">
+          <li
+            key={day}
+            className="-rotate-90 border-2 w-30 col-span-1 text-muted-foreground mb-12"
+          >
             {day}
           </li>
         ))}

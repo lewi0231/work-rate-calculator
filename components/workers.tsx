@@ -49,12 +49,15 @@ function Workers({
   };
 
   useEffect(() => {
-    setWorkers((prev) => {
-      return prev.map((worker) => ({
-        ...worker,
-        shiftLength: shiftLength.decimalFormat,
-      }));
-    });
+    const handleShiftLengthUpdate = async () => {
+      setWorkers((prev) => {
+        return prev.map((worker) => ({
+          ...worker,
+          shiftLength: shiftLength.decimalFormat,
+        }));
+      });
+    };
+    handleShiftLengthUpdate();
   }, [shiftLength]);
 
   return (

@@ -28,8 +28,10 @@ export default function Page() {
     <div className="w-full mx-auto min-w-[300px] max-w-[1200px] min-h-[calc(100vh-80px)] px-10">
       <div>
         <div className="text-left m-auto py-4 space-y-4">
-          <h1 className="text-4xl tracking-tight">Work Rate Calculator</h1>
-          <p className="text-sm w-1/2 text-muted-foreground tracking-wide">
+          <h1 className="text-4xl tracking-tight pl-2 sm:pl-0">
+            Work Rate Calculator
+          </h1>
+          <p className="text-sm w-full pl-2 sm:-l-0 sm:w-1/2 text-muted-foreground tracking-wide">
             The Work Rate Calculator balances relative percentages (between
             workers) based on their rate of work, taken as a percentage of the
             expected rate.
@@ -37,11 +39,15 @@ export default function Page() {
         </div>
       </div>
       <div>
-        <div className="grid grid-cols-1 gap-6 mb-2 w-full md:grid-cols-2 ">
+        <div className="grid grid-cols-1 gap-6 mb-2 w-full lg:grid-cols-2 ">
           <Card className="flex flex-col justify-between items-start gap-4 border-2 bg-gray-500 p-4 text-white/80">
             <div className="flex justify-between items-center w-full">
-              <Label className="text-xl uppercase" htmlFor="workers">
-                Expected rate:
+              <Label
+                className="text-sm text-nowrap sm:text-xl font-light uppercase"
+                htmlFor="workers"
+              >
+                Expected rate{" "}
+                <span className=" w-full text-left">(per hour)</span>:
               </Label>
               <Input
                 type="number"
@@ -53,11 +59,11 @@ export default function Page() {
                   if (parsedValue <= 0) return;
                   setRate(parsedValue);
                 }}
-                className="max-w-sm w-40 bg-white text-primary shrink-0 text-right "
+                className="max-w-sm w-20 sm:w-40 bg-muted text-primary shrink-0 text-right "
                 id="workers"
               />
             </div>
-            <div className="text-xs w-3/4 leading-tight tracking-wide pr-8 space-y-2 font-light">
+            <div className="text-xs w-full sm:w-3/4 leading-tight tracking-wide pr-8 space-y-2 font-light">
               <p>
                 The expected rate is the rate each worker should be aiming to
                 achieve. This won&apos;t affect percentages, but is for your own
@@ -81,14 +87,15 @@ export default function Page() {
                 className="max-w-sm w-20 shrink-0 text-right"
                 id="shift-length"
               /> */}
-              <div className="flex justify-between w-full uppercase text-xl">
-                <div className="flex justify-start gap-2 font-light">
+              <div className="flex justify-between w-full uppercase ">
+                <div className="flex justify-start gap-2 font-light text-sm sm:text-lg text-nowrap">
                   Shift Length{" "}
                   <span className="text-sm flex items-center justify-start">
                     (hours:minutes)
-                  </span>{" "}
+                  </span>
+                  :
                 </div>
-                <span className="bg-white text-primary rounded-sm px-2 text-sm flex items-center w-1/4 justify-end">
+                <span className=" rounded-sm px-2 flex items-center w-1/4 justify-end sm:text-lg">
                   {shiftDurationHours.displayFormat}
                 </span>
               </div>
@@ -100,6 +107,7 @@ export default function Page() {
                 label="Shift start time"
                 id="shift-start"
                 ariaLabel="Shift start time"
+                inputClassName="text-foreground"
               />
               <TimePicker
                 value={endTime}
@@ -107,11 +115,12 @@ export default function Page() {
                 label="Shift end time"
                 id="shift-end"
                 ariaLabel="Shift end time"
+                inputClassName="text-foreground"
               />
             </div>
 
             <div className="text-sm flex gap-6">
-              <p className="text-xs w-3/4 leading-wide tracking-tight pr-8 text-white/80">
+              <p className="text-xs w-full sm:w-3/4 leading-wide tracking-tight pr-8 text-white/80">
                 If shift lengths vary per worker, set the actual shift length
                 here (and adjust each worker below).
               </p>

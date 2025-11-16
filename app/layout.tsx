@@ -36,7 +36,7 @@ export default function RootLayout({
         )}
       >
         <Nav />
-        <main className="flex-grow mt-24">{children}</main>
+        <main className="flex-grow mt-32">{children}</main>
         <Footer />
       </body>
     </html>
