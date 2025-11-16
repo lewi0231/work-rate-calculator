@@ -5,6 +5,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AVAILABILITY_HEADINGS, DAYS_OF_WEEK } from "@/lib/constants";
 import { ScheduleRequestPayload } from "@/lib/scheduler";
 import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
+import { Button } from "./ui/button";
 
 type EmployeeAvailabilityDisplayProps = {
   workers: ScheduleRequestPayload["employees"];
@@ -15,12 +17,14 @@ type EmployeeAvailabilityDisplayProps = {
     ) => ScheduleRequestPayload["employees"][number]
   ) => void;
   onAddWorker: (name: string) => void;
+  onRemoveWorker: (workerId: number) => void;
 };
 
 const EmployeeAvailabilityDisplay = ({
   workers,
   onUpdateWorker,
   onAddWorker,
+  onRemoveWorker,
 }: EmployeeAvailabilityDisplayProps) => {
   const handleToggleAvailability = (
     workerId: number,
@@ -51,7 +55,7 @@ const EmployeeAvailabilityDisplay = ({
       >
         Employee Availability
       </Header>
-      <div className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))]">
+      <div className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))_minmax(4rem,1fr)]">
         <div className="border-r" />
         {AVAILABILITY_HEADINGS.map((heading, index) => (
           <div
@@ -71,7 +75,7 @@ const EmployeeAvailabilityDisplay = ({
         {workers.map((worker) => (
           <div
             key={worker.id}
-            className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))] w-full py-4"
+            className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))_minmax(4rem,1fr)] w-full py-4"
           >
             <div className="font-medium border-r">{worker.name}</div>
             {DAYS_OF_WEEK.map((day) => (
@@ -110,6 +114,16 @@ const EmployeeAvailabilityDisplay = ({
                 }
                 aria-label={`${worker.name} marked as under performing`}
               />
+            </div>
+            <div className="w-full flex justify-center items-center border-l">
+              <Button
+                size="icon"
+                variant="destructive"
+                className="h-8 w-8 hover:opacity-50 transition-opacity duration-300 cursor-pointer"
+                onClick={() => onRemoveWorker(worker.id)}
+              >
+                <X />
+              </Button>
             </div>
           </div>
         ))}

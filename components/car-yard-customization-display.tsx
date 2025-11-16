@@ -6,7 +6,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import TimePicker from "@/components/ui/time-picker";
 import { CAR_YARD_HEADINGS, DAYS_OF_WEEK } from "@/lib/constants";
 import { ScheduleRequestPayload } from "@/lib/scheduler";
+import { X } from "lucide-react";
 import AddNameField from "./add-name-field";
+import { Button } from "./ui/button";
 
 type CarYardCustomizationDisplayProps = {
   carYards: ScheduleRequestPayload["car_yards"];
@@ -18,6 +20,7 @@ type CarYardCustomizationDisplayProps = {
     ) => ScheduleRequestPayload["car_yards"][number]
   ) => void;
   onAddCarYard: (name: string) => void;
+  onRemoveCarYard: (yardId: number) => void;
   numWorkers: number;
 };
 
@@ -27,6 +30,7 @@ const CarYardCustomizationDisplay = ({
   baseStartTime,
   onUpdateCarYard,
   onAddCarYard,
+  onRemoveCarYard,
 }: CarYardCustomizationDisplayProps) => {
   return (
     <section className="w-full mx-auto border-b pb-8">
@@ -38,9 +42,9 @@ const CarYardCustomizationDisplay = ({
       </Header>
       <div className="overflow-x-auto">
         {/* Header row with sticky name column placeholder */}
-        <div className="grid grid-cols-[12rem_repeat(3,minmax(5rem,1fr))_minmax(8rem,1fr)_repeat(3,minmax(5rem,1fr))_minmax(10rem,1fr)_minmax(8rem,1fr)_minmax(5rem,1fr)_minmax(12rem,1fr)]  border-b pb-4 text-wrap pt-10 min-w-fit">
+        <div className="grid grid-cols-[12rem_repeat(3,minmax(5rem,1fr))_minmax(8rem,1fr)_repeat(3,minmax(5rem,1fr))_minmax(10rem,1fr)_minmax(8rem,1fr)_minmax(5rem,1fr)_minmax(12rem,1fr)_4rem]  border-b pb-4 text-wrap pt-10 min-w-fit">
           {/* Sticky name column header - empty since name is self-explanatory */}
-          <div className="sticky left-0 z-20 bg-background border-r" />
+          <div className="sticky left-0 z-20 bg-background border-r backdrop-blur-2xl" />
           {CAR_YARD_HEADINGS.map((heading, index) => (
             <div
               key={heading + index}
@@ -59,10 +63,10 @@ const CarYardCustomizationDisplay = ({
           return (
             <div
               key={yard.id}
-              className="grid grid-cols-[12rem_repeat(3,minmax(5rem,1fr))_minmax(8rem,1fr)_repeat(3,minmax(5rem,1fr))_minmax(10rem,1fr)_minmax(8rem,1fr)_minmax(5rem,1fr)_minmax(12rem,1fr)]  divide-y min-w-fit"
+              className="grid grid-cols-[12rem_repeat(3,minmax(5rem,1fr))_minmax(8rem,1fr)_repeat(3,minmax(5rem,1fr))_minmax(10rem,1fr)_minmax(8rem,1fr)_minmax(5rem,1fr)_minmax(12rem,1fr)_4rem]  divide-y min-w-fit"
             >
               {/* Sticky name column - stays visible while scrolling */}
-              <div className="sticky left-0 z-10 bg-background flex items-center justify-start py-4 font-medium border-r">
+              <div className="sticky left-0 z-10 bg-background flex items-center justify-start py-4 font-medium border-r backdrop-blur-3xl">
                 {yard.name}
               </div>
               <div className="flex items-center justify-center border-r py-2 text-center">
@@ -283,6 +287,18 @@ const CarYardCustomizationDisplay = ({
                     </label>
                   );
                 })}
+              </div>
+              <div className="flex items-center justify-center">
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => {
+                    onRemoveCarYard(yard.id);
+                  }}
+                  className="h-8 w-8 cursor-pointer hover:opacity-50 transition-opacity duration-300"
+                >
+                  <X />
+                </Button>
               </div>
             </div>
           );

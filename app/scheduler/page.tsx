@@ -69,6 +69,10 @@ const SchedulerPage = () => {
     }
   };
 
+  const handleRemoveWorker = (workerId: number) => {
+    setWorkers((prev) => prev.filter((worker) => worker.id !== workerId));
+  };
+
   const handleAddWorker = (name: string) => {
     const newWorker: Employee = {
       name,
@@ -80,6 +84,10 @@ const SchedulerPage = () => {
     setWorkers((prev) => {
       return [...prev, newWorker];
     });
+  };
+
+  const handleRemoveCardYard = (yardId: number) => {
+    setCarYards((prev) => prev.filter((yard) => yard.id !== yardId));
   };
 
   const handleAddCarYard = (name: string) => {
@@ -121,6 +129,7 @@ const SchedulerPage = () => {
         workers={workers}
         onUpdateWorker={handleUpdateWorker}
         onAddWorker={handleAddWorker}
+        onRemoveWorker={handleRemoveWorker}
       />
       <CarYardCustomizationDisplay
         carYards={carYards}
@@ -128,6 +137,7 @@ const SchedulerPage = () => {
         onUpdateCarYard={handleUpdateCarYard}
         onAddCarYard={handleAddCarYard}
         numWorkers={workers.length}
+        onRemoveCarYard={handleRemoveCardYard}
       />
 
       <div className="w-full flex justify-center pt-4">

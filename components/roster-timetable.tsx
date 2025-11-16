@@ -95,7 +95,7 @@ export function RosterTimetable({ days }: RosterTimetableProps) {
         {orderedDays.map(({ day, yards }) => (
           <div key={day} className="flex min-h-0 flex-col">
             {/* Day Header */}
-            <div className="mb-3 rounded-md bg-muted/50 px-3 py-2 text-center">
+            <div className="mb-3 rounded-md bg-muted/50 px-3 py-2 text-center sticky top-0 backdrop-blur-xl">
               <h3 className="font-semibold text-foreground">
                 {capitalizeDay(day)}
               </h3>
