@@ -18,6 +18,7 @@ spec:
       containers:
         - name: work-rate-calculator
           image: ghcr.io/lewi0231/work-rate-calculator:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           env:

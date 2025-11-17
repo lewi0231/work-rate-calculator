@@ -54,4 +54,4 @@ COPY --from=builder /app/public ./public
 # Run the application
 USER node
 EXPOSE 3000
-CMD ["node", ".next/standalone/server.js"]
+CMD ["node", "server.js"]
