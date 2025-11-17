@@ -124,7 +124,7 @@ const SchedulerPage = () => {
     (hasRosterData || hasAssignments) && !rosterDisplayIsOpen;
 
   return (
-    <main className="w-full min-h-screen flex flex-col justify-start items-start max-w-[1200px] mx-auto pb-20 space-y-10 px-10 relative">
+    <main className="w-full min-h-screen flex flex-col justify-start items-start max-w-[1200px] mx-auto pb-20 space-y-10 relative">
       <GeneralSettingsDisplay
         maxHoursPerDay={maxHoursPerDay}
         earliestStartTime={earliestStartTime}
