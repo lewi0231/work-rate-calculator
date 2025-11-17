@@ -32,7 +32,7 @@ function capitalizeDay(day: string): string {
  */
 function YardCard({ yard }: { yard: YardSchedule }) {
   return (
-    <Card className="mb-3 border bg-card shadow-sm hover:shadow transition-shadow">
+    <Card className="mb-3 border bg-gray-200/50 shadow-sm hover:shadow transition-shadow">
       <CardHeader className="pb-2 pt-3">
         <CardTitle className="text-sm font-semibold leading-tight">
           {yard.car_yard_name}
@@ -95,14 +95,14 @@ export function RosterTimetable({ days }: RosterTimetableProps) {
         {orderedDays.map(({ day, yards }) => (
           <div key={day} className="flex min-h-0 flex-col">
             {/* Day Header */}
-            <div className="mb-3 rounded-md px-3 py-2 text-center sticky top-0 backdrop-blur-2xl ">
+            <div className="mb-3 rounded-md px-3 py-2 text-center sticky top-0 z-10 bg-background/80 backdrop-blur-2xl">
               <h3 className="font-semibold text-foreground">
                 {capitalizeDay(day)}
               </h3>
             </div>
 
             {/* Yard Cards for this day */}
-            <div className="flex-1 space-y-0 overflow-y-auto">
+            <div className="flex-1 space-y-0 overflow-y-auto ">
               {yards.length > 0 ? (
                 yards.map((yard) => (
                   <YardCard key={yard.car_yard_id} yard={yard} />

@@ -29,7 +29,7 @@ export function RosterDisplaySheet({
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent className="!w-[90vw] !max-w-7xl sm:!w-[95vw] sm:!max-w-7xl flex flex-col px-4">
+      <SheetContent className="!w-[90vw] !max-w-7xl sm:!w-[95vw] sm:!max-w-7xl flex flex-col px-4 ">
         <SheetHeader className="flex-shrink-0">
           <SheetTitle>Weekly Roster</SheetTitle>
           <SheetDescription>

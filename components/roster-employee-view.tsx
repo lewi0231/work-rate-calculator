@@ -98,7 +98,7 @@ function EmployeeScheduleCard({
   const totalHours = calculateTotalHours(employeeId, stats);
 
   return (
-    <Card className="mb-4 border bg-card shadow-sm hover:shadow-md transition-shadow">
+    <Card className="mb-4 border shadow-sm hover:shadow-md transition-shadow bg-gray-200/50">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-semibold">
