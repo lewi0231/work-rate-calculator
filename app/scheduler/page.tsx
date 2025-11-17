@@ -14,8 +14,9 @@ import {
   ScheduleRequestPayload,
   ScheduleResponse,
 } from "@/lib/scheduler";
-import { Calendar } from "lucide-react";
+import { Calendar, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const SchedulerPage = () => {
   const [workers, setWorkers] = useState<ScheduleRequestPayload["employees"]>(
@@ -59,12 +60,30 @@ const SchedulerPage = () => {
 
     try {
       setIsLoading(true);
+      const loadingToast = toast.loading("Generating roster...", {
+        description: "This may take a few seconds",
+      });
+
       const response = await generateRoster(data);
       console.log(response);
       setRosterData(response as ScheduleResponse);
       setRosterDisplayIsOpen(true);
+
+      toast.dismiss(loadingToast);
+      toast.success("Roster generated successfully!");
     } catch (error) {
+      toast.dismiss();
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to generated roster. Please try again or contact support.";
       console.error("Failed to generate roster:", error);
+
+      toast.error("Failed to generate roster", {
+        description: errorMessage,
+        duration: 5000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +173,14 @@ const SchedulerPage = () => {
           onClick={handleGenerateRoster}
           disabled={isLoading}
         >
-          Generate Roster
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            "Generate Roster"
+          )}
         </Button>
       </div>
       <RosterDisplaySheet

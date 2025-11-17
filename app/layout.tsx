@@ -2,6 +2,7 @@ import Footer from "@/components/footer";
 import Nav from "@/components/nav";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { Toaster } from "sonner";
 import "./global.css";
 
 import { Bebas_Neue, Cousine } from "next/font/google";
@@ -38,6 +39,7 @@ export default function RootLayout({
         <Nav />
         <main className="flex-grow mt-32">{children}</main>
         <Footer />
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

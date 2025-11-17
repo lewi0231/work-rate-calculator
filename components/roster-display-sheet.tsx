@@ -90,6 +90,7 @@ export function RosterDisplaySheet({
         <Button
           variant="default"
           className="my-4 text-lg w-1/4 h-20 mx-auto cursor-pointer hover:scale-110 transition-transform duration-300"
+          disabled
         >
           <Download />
           <span>Export Roster</span>
