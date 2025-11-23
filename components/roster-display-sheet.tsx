@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScheduleResponse } from "@/lib/scheduler";
+import { downloadExcel } from "@/lib/utils";
 import { Download } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -90,7 +91,12 @@ export function RosterDisplaySheet({
         <Button
           variant="default"
           className="my-4 text-lg w-1/4 h-20 mx-auto cursor-pointer hover:scale-110 transition-transform duration-300"
-          disabled
+          disabled={!hasRosterData}
+          onClick={() => {
+            if (hasRosterData && rosterData?.roster?.days) {
+              downloadExcel(rosterData.roster.days);
+            }
+          }}
         >
           <Download />
           <span>Export Roster</span>

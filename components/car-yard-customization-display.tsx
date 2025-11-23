@@ -47,7 +47,7 @@ const CarYardCustomizationDisplay = ({
       </Header>
       <div className="overflow-x-auto">
         {/* Header row with sticky name column placeholder */}
-        <div className="grid grid-cols-[13rem_repeat(2,minmax(5rem,1fr))_minmax(8rem,1fr)_repeat(3,minmax(5rem,1fr))_minmax(10rem,1fr)_minmax(8rem,1fr)_minmax(5rem,1fr)_minmax(12rem,1fr)_4rem]  border-b pb-4 text-wrap pt-10 min-w-fit">
+        <div className="grid grid-cols-[13rem_repeat(2,minmax(5rem,1fr))_minmax(8rem,1fr)_repeat(3,minmax(5rem,1fr))_minmax(10rem,1fr)_minmax(12rem,1fr)_minmax(5rem,1fr)_minmax(12rem,1fr)_4rem]  border-b pb-4 text-wrap pt-10 min-w-fit">
           {/* Sticky name column header - empty since name is self-explanatory */}
           <div className="sticky left-0 z-20 border-r backdrop-blur-xs" />
           {CAR_YARD_HEADINGS.map((headingObj, index) => (
@@ -77,7 +77,7 @@ const CarYardCustomizationDisplay = ({
             return (
               <div
                 key={yard.id}
-                className="grid grid-cols-[13rem_repeat(2,minmax(5rem,1fr))_minmax(8rem,1fr)_repeat(3,minmax(5rem,1fr))_minmax(10rem,1fr)_minmax(8rem,1fr)_minmax(5rem,1fr)_minmax(12rem,1fr)_4rem] min-w-fit border-2 border-foreground/10 rounded-2xl px-2 bg-muted/50"
+                className="grid grid-cols-[13rem_repeat(2,minmax(5rem,1fr))_minmax(8rem,1fr)_repeat(3,minmax(5rem,1fr))_minmax(10rem,1fr)_minmax(12rem,1fr)_minmax(5rem,1fr)_minmax(12rem,1fr)_4rem] min-w-fit border-2 border-foreground/10 rounded-2xl px-2 bg-muted/50"
               >
                 {/* Sticky name column - stays visible while scrolling */}
                 <div className="sticky left-0 z-10 flex items-center justify-start font-medium border-r backdrop-blur-3xl pl-2">
