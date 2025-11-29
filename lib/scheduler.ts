@@ -19,6 +19,7 @@ export interface Employee {
   ranking: EmployeeReliabilityRating;
   available_days: DayOfWeek[];
   not_region?: CarYardRegion;
+  excluded_yards: number[]; // List of yard IDs that the employee cannot be rostered on
 }
 
 export interface CarYard {
@@ -33,6 +34,7 @@ export interface CarYard {
   per_week?: [visitsRequired: number, minGapDays: number];
   linked_yard?: [otherYardId: number, gapDays: number];
   startTime?: string; // "HH:MM"
+  north_south_position: number;
 }
 
 export interface ScheduleRequestPayload {
@@ -43,6 +45,7 @@ export interface ScheduleRequestPayload {
   max_hours_per_day?: number;
   earliest_start_time?: string; // "HH:MM"
   travel_buffer_minutes?: number;
+  max_radius?: number; // Maximum position difference between yards that can be scheduled same day
 }
 
 // Response types from the roster API
@@ -111,31 +114,35 @@ export const payload: ScheduleRequestPayload = {
       name: "Chris",
       ranking: "excellent",
       available_days: ["monday", "wednesday", "friday"],
+      excluded_yards: [],
     },
     {
       id: 2,
       name: "Vashaal",
       ranking: "excellent",
       available_days: [],
+      excluded_yards: [],
     },
     {
       id: 3,
       name: "Paul",
       ranking: "excellent",
       available_days: ["wednesday", "thursday", "friday", "saturday"],
-      not_region: "south",
+      excluded_yards: [2, 3, 10],
     },
     {
       id: 4,
       name: "Nitish",
       ranking: "excellent",
       available_days: ["tuesday", "thursday", "friday", "saturday"],
+      excluded_yards: [],
     },
     {
       id: 5,
       name: "Sanskar",
       ranking: "excellent",
       available_days: ["monday", "tuesday", "thursday", "friday"],
+      excluded_yards: [],
     },
     {
       id: 6,
@@ -149,6 +156,7 @@ export const payload: ScheduleRequestPayload = {
         "friday",
         "saturday",
       ],
+      excluded_yards: [],
     },
   ],
   car_yards: [
@@ -161,6 +169,7 @@ export const payload: ScheduleRequestPayload = {
       max_employees: 3,
       hours_required: 7.5,
       per_week: [2, 4],
+      north_south_position: 25,
     },
     {
       id: 2,
@@ -172,6 +181,7 @@ export const payload: ScheduleRequestPayload = {
       hours_required: 6.0,
       linked_yard: [3, 3],
       per_week: [1, 0],
+      north_south_position: 30,
     },
     {
       id: 3,
@@ -182,6 +192,7 @@ export const payload: ScheduleRequestPayload = {
       max_employees: 4,
       hours_required: 12.0,
       per_week: [1, 0],
+      north_south_position: 30,
     },
     {
       id: 4,
@@ -194,6 +205,7 @@ export const payload: ScheduleRequestPayload = {
       required_days: ["monday"],
       startTime: "08:30:00",
       per_week: [1, 0],
+      north_south_position: 15,
     },
     {
       id: 5,
@@ -206,6 +218,7 @@ export const payload: ScheduleRequestPayload = {
       required_days: ["friday"],
       startTime: "08:30:00",
       per_week: [1, 0],
+      north_south_position: 15,
     },
     {
       id: 6,
@@ -217,6 +230,7 @@ export const payload: ScheduleRequestPayload = {
       hours_required: 7,
       required_days: ["thursday"],
       per_week: [1, 0],
+      north_south_position: 5,
     },
     {
       id: 7,
@@ -228,17 +242,19 @@ export const payload: ScheduleRequestPayload = {
       hours_required: 3.5,
       linked_yard: [11, 3],
       per_week: [1, 0],
+      north_south_position: 20,
     },
-    {
-      id: 8,
-      name: "Stillwell Ford",
-      priority: "high",
-      region: "central",
-      min_employees: 1,
-      max_employees: 1,
-      hours_required: 2,
-      per_week: [1, 0],
-    },
+    // {
+    //   id: 8,
+    //   name: "Stillwell Ford",
+    //   priority: "high",
+    //   region: "central",
+    //   min_employees: 1,
+    //   max_employees: 1,
+    //   hours_required: 2,
+    //   per_week: [1, 0],
+    //   north_south_position: 25,
+    // },
     {
       id: 9,
       name: "MN Toyota (New/Used)",
@@ -249,6 +265,7 @@ export const payload: ScheduleRequestPayload = {
       hours_required: 6,
       required_days: ["friday"],
       per_week: [1, 0],
+      north_south_position: 10,
     },
     {
       id: 10,
@@ -260,6 +277,7 @@ export const payload: ScheduleRequestPayload = {
       hours_required: 5,
       required_days: ["thursday"],
       per_week: [1, 0],
+      north_south_position: 30,
     },
     {
       id: 11,
@@ -270,13 +288,15 @@ export const payload: ScheduleRequestPayload = {
       max_employees: 1,
       hours_required: 1.5,
       per_week: [1, 0],
+      north_south_position: 25,
     },
   ],
   days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
   // yard_groups: {
   //   reynella_group: [5, 6],
   // },
-  max_hours_per_day: 6.0,
-  earliest_start_time: "06:00:00",
+  max_hours_per_day: 7.0,
+  earliest_start_time: "05:30:00",
   travel_buffer_minutes: 30,
+  max_radius: 25,
 };

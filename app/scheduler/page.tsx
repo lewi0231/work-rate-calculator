@@ -31,6 +31,7 @@ const SchedulerPage = () => {
   const [earliestStartTime, setEarliestStartTime] = useState(
     payload.earliest_start_time ?? "06:00:00"
   );
+  const [maxRadius, setMaxRadius] = useState(payload.max_radius ?? 20);
   const [rosterDisplayIsOpen, setRosterDisplayIsOpen] = useState(false);
   const [rosterData, setRosterData] = useState<ScheduleResponse | null>(null);
 
@@ -56,6 +57,7 @@ const SchedulerPage = () => {
       days: DAYS_OF_WEEK,
       earliest_start_time: earliestStartTime,
       max_hours_per_day: maxHoursPerDay,
+      max_radius: maxRadius,
     };
 
     try {
@@ -94,14 +96,16 @@ const SchedulerPage = () => {
   };
 
   const handleAddWorker = (name: string) => {
-    const newWorker: Employee = {
-      name,
-      id: workers.length + 1,
-      available_days: DAYS_OF_WEEK,
-      ranking: "below_average",
-    };
-
     setWorkers((prev) => {
+      // Find the maximum existing ID and add 1 to ensure uniqueness
+      const maxId = prev.length > 0 ? Math.max(...prev.map((w) => w.id)) : 0;
+      const newWorker: Employee = {
+        name,
+        id: maxId + 1,
+        available_days: DAYS_OF_WEEK,
+        ranking: "below_average",
+        excluded_yards: [],
+      };
       return [...prev, newWorker];
     });
   };
@@ -111,16 +115,19 @@ const SchedulerPage = () => {
   };
 
   const handleAddCarYard = (name: string) => {
-    const newCarYard: CarYard = {
-      name,
-      id: carYards.length + 1,
-      min_employees: 1,
-      max_employees: 4,
-      region: "central",
-      hours_required: 2,
-      priority: "high",
-    };
     setCarYards((prev) => {
+      // Find the maximum existing ID and add 1 to ensure uniqueness
+      const maxId = prev.length > 0 ? Math.max(...prev.map((y) => y.id)) : 0;
+      const newCarYard: CarYard = {
+        name,
+        id: maxId + 1,
+        min_employees: 1,
+        max_employees: 4,
+        region: "central",
+        hours_required: 2,
+        priority: "high",
+        north_south_position: 15,
+      };
       return [...prev, newCarYard];
     });
   };
@@ -147,12 +154,15 @@ const SchedulerPage = () => {
       <GeneralSettingsDisplay
         maxHoursPerDay={maxHoursPerDay}
         earliestStartTime={earliestStartTime}
+        maxRadius={maxRadius}
         onMaxHoursPerDayChange={setMaxHoursPerDay}
         onEarliestStartTimeChange={setEarliestStartTime}
+        onMaxRadiusChange={setMaxRadius}
       />
 
       <EmployeeAvailabilityDisplay
         workers={workers}
+        carYards={carYards}
         onUpdateWorker={handleUpdateWorker}
         onAddWorker={handleAddWorker}
         onRemoveWorker={handleRemoveWorker}
@@ -187,6 +197,7 @@ const SchedulerPage = () => {
         isOpen={rosterDisplayIsOpen}
         onOpenChange={(newState) => setRosterDisplayIsOpen(newState)}
         rosterData={rosterData}
+        employees={workers}
       />
       {canReopenRoster && (
         <Button

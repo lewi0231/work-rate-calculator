@@ -15,8 +15,8 @@ export const AVAILABILITY_HEADINGS = [
     tooltip: `Employee availability on ${day}`,
   })),
   {
-    heading: "not region",
-    tooltip: "Regions where this employee should not be assigned",
+    heading: "excluded yards",
+    tooltip: "Car yards where this employee cannot be rostered",
   },
   {
     heading: "under perform",
@@ -37,6 +37,10 @@ export const CAR_YARD_HEADINGS = [
   {
     heading: "region",
     tooltip: "The region where this car yard is located",
+  },
+  {
+    heading: "position",
+    tooltip: "North-south position ranking (lower numbers are further north)",
   },
   {
     heading: "min workers",

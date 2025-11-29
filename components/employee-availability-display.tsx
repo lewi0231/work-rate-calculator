@@ -1,6 +1,6 @@
 import AddNameField from "@/components/add-name-field";
 import Header from "@/components/header";
-import SelectCarYardRegion from "@/components/select-region";
+import SelectExcludedYards from "@/components/select-excluded-yards";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tooltip,
@@ -15,6 +15,7 @@ import { Button } from "./ui/button";
 
 type EmployeeAvailabilityDisplayProps = {
   workers: ScheduleRequestPayload["employees"];
+  carYards: ScheduleRequestPayload["car_yards"];
   onUpdateWorker: (
     workerId: number,
     updater: (
@@ -27,6 +28,7 @@ type EmployeeAvailabilityDisplayProps = {
 
 const EmployeeAvailabilityDisplay = ({
   workers,
+  carYards,
   onUpdateWorker,
   onAddWorker,
   onRemoveWorker,
@@ -60,13 +62,13 @@ const EmployeeAvailabilityDisplay = ({
       >
         Employee Availability
       </Header>
-      <div className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))_minmax(4rem,1fr)]">
+      <div className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_minmax(8rem,1.5fr)_minmax(4rem,1.5fr)_minmax(4rem,1fr)]">
         <div className="border-r" />
         {AVAILABILITY_HEADINGS.map((headingObj, index) => (
           <div
             className={cn(
               " text-muted-foreground font-medium text-sm  w-full flex justify-center items-center py-4",
-              [5, 6].includes(index) ? "border-r" : ""
+              [6, 7].includes(index) ? "border-r" : ""
             )}
             key={headingObj.heading}
           >
@@ -88,7 +90,7 @@ const EmployeeAvailabilityDisplay = ({
         {workers.map((worker) => (
           <div
             key={worker.id}
-            className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_repeat(2,minmax(4rem,1.5fr))_minmax(4rem,1fr)] w-full py-2 border-2 border-foreground/10 rounded-md bg-muted/50"
+            className="grid grid-cols-[minmax(12rem,1fr)_repeat(6,minmax(2rem,0.5fr))_minmax(8rem,1.5fr)_minmax(4rem,1.5fr)_minmax(4rem,1fr)] w-full py-2 border-2 border-foreground/10 rounded-md bg-muted/50"
           >
             <div className="font-medium border-r  py-2 pl-2">{worker.name}</div>
             {DAYS_OF_WEEK.map((day) => (
@@ -106,15 +108,11 @@ const EmployeeAvailabilityDisplay = ({
                 />
               </div>
             ))}
-            <div className="flex items-center justify-center border-l overflow-hidden ">
-              <SelectCarYardRegion
+            <div className="flex items-center justify-center border-l overflow-hidden">
+              <SelectExcludedYards
                 worker={worker}
-                handleUpdateWorker={(region) =>
-                  onUpdateWorker(worker.id, (current) => ({
-                    ...current,
-                    not_region: region,
-                  }))
-                }
+                carYards={carYards}
+                onUpdateWorker={(updater) => onUpdateWorker(worker.id, updater)}
               />
             </div>
             <div className="flex items-center justify-center border-l ">

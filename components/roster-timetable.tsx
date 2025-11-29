@@ -1,10 +1,23 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DAYS_OF_WEEK } from "@/lib/constants";
-import { DayRoster, YardSchedule } from "@/lib/scheduler";
+import { DayOfWeek, DayRoster, Employee, YardSchedule } from "@/lib/scheduler";
 import { cn } from "@/lib/utils";
+import { Plus, X } from "lucide-react";
+import { useState } from "react";
 
 type RosterTimetableProps = {
   days: DayRoster[];
+  employees: Employee[];
+  onRemoveWorker: (day: DayOfWeek, yardId: number, workerName: string) => void;
+  onAddWorker: (day: DayOfWeek, yardId: number, workerName: string) => void;
 };
 
 /**
@@ -28,9 +41,40 @@ function capitalizeDay(day: string): string {
  * Displays:
  * - Yard name (title)
  * - Time range (start - finish)
- * - List of assigned workers as badges
+ * - List of assigned workers as interactive badges (can be removed)
+ * - Add worker dropdown
  */
-function YardCard({ yard }: { yard: YardSchedule }) {
+function YardCard({
+  yard,
+  day,
+  employees,
+  onRemoveWorker,
+  onAddWorker,
+}: {
+  yard: YardSchedule;
+  day: DayOfWeek;
+  employees: Employee[];
+  onRemoveWorker: (day: DayOfWeek, yardId: number, workerName: string) => void;
+  onAddWorker: (day: DayOfWeek, yardId: number, workerName: string) => void;
+}) {
+  const [isAddingWorker, setIsAddingWorker] = useState(false);
+
+  // Get available employees (not already assigned to this yard)
+  const availableEmployees = employees.filter(
+    (emp) => !yard.workers.includes(emp.name)
+  );
+
+  const handleAddWorker = (workerName: string) => {
+    if (workerName === "none") {
+      setIsAddingWorker(false);
+      return;
+    }
+    if (workerName) {
+      onAddWorker(day, yard.car_yard_id, workerName);
+      setIsAddingWorker(false);
+    }
+  };
+
   return (
     <Card className="mb-3 border bg-gray-200/50 shadow-sm hover:shadow transition-shadow">
       <CardHeader className="pb-2 pt-3">
@@ -48,25 +92,61 @@ function YardCard({ yard }: { yard: YardSchedule }) {
         </div>
 
         {/* Workers List */}
-        {yard.workers.length > 0 && (
-          <div className="space-y-1.5">
-            <div className="text-xs font-medium text-muted-foreground">
-              Workers ({yard.workers.length}):
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {yard.workers.map((worker, index) => (
-                <span
-                  key={index}
-                  className={cn(
-                    "inline-flex items-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20"
-                  )}
-                >
-                  {worker}
-                </span>
-              ))}
-            </div>
+        <div className="space-y-1.5">
+          <div className="text-xs font-medium text-muted-foreground">
+            Workers ({yard.workers.length}):
           </div>
-        )}
+          <div className="flex flex-wrap gap-1">
+            {yard.workers.map((worker, index) => (
+              <span
+                key={index}
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20"
+                )}
+              >
+                {worker}
+                <button
+                  onClick={() => onRemoveWorker(day, yard.car_yard_id, worker)}
+                  className="ml-0.5 hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                  aria-label={`Remove ${worker} from ${yard.car_yard_name}`}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+
+          {/* Add Worker Dropdown */}
+          {availableEmployees.length > 0 && (
+            <div className="mt-2">
+              {!isAddingWorker ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs gap-1"
+                  onClick={() => setIsAddingWorker(true)}
+                >
+                  <Plus className="h-3 w-3" />
+                  Add Worker
+                </Button>
+              ) : (
+                <Select onValueChange={handleAddWorker}>
+                  <SelectTrigger className="h-7 text-xs w-full">
+                    <SelectValue placeholder="Select worker..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Cancel</SelectItem>
+                    {availableEmployees.map((emp) => (
+                      <SelectItem key={emp.id} value={emp.name}>
+                        {emp.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
@@ -76,7 +156,12 @@ function YardCard({ yard }: { yard: YardSchedule }) {
  * RosterTimetable displays the weekly roster in a grid layout
  * with days as columns and yard schedules as cards within each day
  */
-export function RosterTimetable({ days }: RosterTimetableProps) {
+export function RosterTimetable({
+  days,
+  employees,
+  onRemoveWorker,
+  onAddWorker,
+}: RosterTimetableProps) {
   // Create a map of day -> yards for efficient lookup
   const dayMap = new Map<string, YardSchedule[]>();
   days.forEach((dayRoster) => {
@@ -105,7 +190,14 @@ export function RosterTimetable({ days }: RosterTimetableProps) {
             <div className="flex-1 space-y-0 overflow-y-auto ">
               {yards.length > 0 ? (
                 yards.map((yard) => (
-                  <YardCard key={yard.car_yard_id} yard={yard} />
+                  <YardCard
+                    key={yard.car_yard_id}
+                    yard={yard}
+                    day={day as DayOfWeek}
+                    employees={employees}
+                    onRemoveWorker={onRemoveWorker}
+                    onAddWorker={onAddWorker}
+                  />
                 ))
               ) : (
                 <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">

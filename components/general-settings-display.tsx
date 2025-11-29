@@ -5,22 +5,26 @@ import TimePicker from "@/components/ui/time-picker";
 type GeneralSettingsDisplayProps = {
   maxHoursPerDay: number;
   earliestStartTime: string; // Format: "HH:MM"
+  maxRadius: number;
   onMaxHoursPerDayChange: (value: number) => void;
   onEarliestStartTimeChange: (value: string) => void;
+  onMaxRadiusChange: (value: number) => void;
 };
 
 const GeneralSettingsDisplay = ({
   maxHoursPerDay,
   earliestStartTime,
+  maxRadius,
   onMaxHoursPerDayChange,
   onEarliestStartTimeChange,
+  onMaxRadiusChange,
 }: GeneralSettingsDisplayProps) => {
   return (
     <section className="w-full mx-auto border-b pb-4">
       <Header subText="Configure general scheduling parameters that apply across all employees and car yards.">
         General Settings
       </Header>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-10 pb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-10 pb-4">
         <div className="flex flex-col gap-2 w-3/4">
           <label
             htmlFor="max-hours-per-day"
@@ -53,6 +57,26 @@ const GeneralSettingsDisplay = ({
             contentClassName="border-2 border-foreground/10"
             inputClassName="border-2 border-foreground/10"
           />
+        </div>
+        <div className="flex flex-col gap-2 w-3/4">
+          <label
+            htmlFor="max-radius"
+            className="text-sm font-medium text-muted-foreground"
+          >
+            Max Position Radius
+          </label>
+          <div className="flex items-center gap-2 bg-muted/50 py-3 px-3 rounded-md border-2 border-foreground/10">
+            <InputCounter
+              min={1}
+              step={1}
+              value={maxRadius}
+              onValueChange={onMaxRadiusChange}
+              max={100}
+              ariaLabel="Maximum position difference between yards that can be scheduled same day"
+              className="max-w-[8rem] border-2 border-foreground/10"
+            />
+            <span className="text-sm text-muted-foreground">units</span>
+          </div>
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DAYS_OF_WEEK } from "@/lib/constants";
 import { Assignment, DayOfWeek, ScheduleStats } from "@/lib/scheduler";
+import { getShiftDurationHours } from "@/lib/utils";
 
 type RosterEmployeeViewProps = {
   assignments: Assignment[];
@@ -45,9 +46,29 @@ function AssignmentCard({ assignment }: { assignment: Assignment }) {
 }
 
 /**
- * Calculates total hours for an employee from stats
+ * Calculates total hours for an employee from assignments
+ * This calculates hours directly from assignment start/end times
  */
-function calculateTotalHours(
+function calculateTotalHoursFromAssignments(assignments: Assignment[]): number {
+  if (!assignments || assignments.length === 0) return 0;
+
+  let totalHours = 0;
+
+  assignments.forEach((assignment) => {
+    const duration = getShiftDurationHours(
+      assignment.start_time,
+      assignment.finish_time
+    );
+    totalHours += duration.decimalFormat;
+  });
+
+  return totalHours;
+}
+
+/**
+ * Calculates total hours for an employee from stats (fallback)
+ */
+function calculateTotalHoursFromStats(
   employeeId: number,
   stats?: ScheduleStats
 ): number | null {
@@ -95,7 +116,8 @@ function EmployeeScheduleCard({
 
   // Calculate total assignments for summary
   const totalAssignments = assignments.length;
-  const totalHours = calculateTotalHours(employeeId, stats);
+  // Calculate hours directly from assignments (more reliable when roster is edited)
+  const totalHours = calculateTotalHoursFromAssignments(assignments);
 
   return (
     <Card className="mb-4 border shadow-sm hover:shadow-md transition-shadow bg-gray-200/50">
@@ -105,7 +127,7 @@ function EmployeeScheduleCard({
             {employeeName}
           </CardTitle>
           <div className="flex flex-col items-end gap-1">
-            {totalHours !== null && (
+            {totalHours > 0 && (
               <span className="text-sm font-semibold text-foreground">
                 ~{totalHours.toFixed(1)}h
               </span>
