@@ -13,6 +13,7 @@ import {
   DayOfWeek,
   Employee,
   ScheduleResponse,
+  YardSchedule,
 } from "@/lib/scheduler";
 import { downloadExcel } from "@/lib/utils";
 import { Download } from "lucide-react";
@@ -187,6 +188,88 @@ export function RosterDisplaySheet({
     [findEmployeeByName, createAssignment]
   );
 
+  // Handle moving/reordering a shift (yard schedule)
+  const handleMoveShift = useCallback(
+    (
+      yard: YardSchedule,
+      fromDay: DayOfWeek,
+      toDay: DayOfWeek,
+      targetIndex?: number
+    ) => {
+      setRosterData((prev) => {
+        if (!prev) return prev;
+
+        const updatedDays = prev.roster.days.map((dayRoster) => {
+          // Reorder within the same day
+          if (dayRoster.day === fromDay && fromDay === toDay) {
+            const currentIndex = dayRoster.yards.findIndex(
+              (y) => y.car_yard_id === yard.car_yard_id
+            );
+            if (currentIndex === -1) return dayRoster;
+
+            const newYards = [...dayRoster.yards];
+            // Remove from current position
+            newYards.splice(currentIndex, 1);
+
+            // Compute target index; default to end if undefined
+            const insertIndex =
+              typeof targetIndex === "number" && targetIndex >= 0
+                ? targetIndex
+                : newYards.length;
+
+            newYards.splice(insertIndex, 0, yard);
+
+            return { ...dayRoster, yards: newYards };
+          }
+
+          // Remove from source day when moving to a different day
+          if (dayRoster.day === fromDay && fromDay !== toDay) {
+            return {
+              ...dayRoster,
+              yards: dayRoster.yards.filter(
+                (y) => y.car_yard_id !== yard.car_yard_id
+              ),
+            };
+          }
+
+          // Insert into target day
+          if (dayRoster.day === toDay && fromDay !== toDay) {
+            const newYards = [...dayRoster.yards];
+            const insertIndex =
+              typeof targetIndex === "number" && targetIndex >= 0
+                ? targetIndex
+                : newYards.length;
+            newYards.splice(insertIndex, 0, yard);
+            return { ...dayRoster, yards: newYards };
+          }
+
+          return dayRoster;
+        });
+
+        // Update assignments only when the day changes
+        const updatedAssignments =
+          fromDay === toDay
+            ? prev.assignments
+            : prev.assignments?.map((assignment) => {
+                if (
+                  assignment.car_yard_id === yard.car_yard_id &&
+                  assignment.day === fromDay
+                ) {
+                  return { ...assignment, day: toDay };
+                }
+                return assignment;
+              });
+
+        return {
+          ...prev,
+          roster: { days: updatedDays },
+          assignments: updatedAssignments || [],
+        };
+      });
+    },
+    []
+  );
+
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent className="!w-[90vw] !max-w-7xl sm:!w-[95vw] sm:!max-w-7xl flex flex-col px-4 ">
@@ -223,6 +306,7 @@ export function RosterDisplaySheet({
                     employees={employees}
                     onRemoveWorker={handleRemoveWorker}
                     onAddWorker={handleAddWorker}
+                    onMoveShift={handleMoveShift}
                   />
                 ) : (
                   <div className="flex items-center justify-center p-8 text-center text-muted-foreground">

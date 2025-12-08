@@ -1,20 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DAYS_OF_WEEK } from "@/lib/constants";
 import { Assignment, DayOfWeek, ScheduleStats } from "@/lib/scheduler";
-import { getShiftDurationHours } from "@/lib/utils";
 
 type RosterEmployeeViewProps = {
   assignments: Assignment[];
   stats?: ScheduleStats;
 };
-
-/**
- * Formats a time string (HH:MM:SS or HH:MM) to a readable format (HH:MM)
- */
-function formatTime(timeString: string): string {
-  const [hours, minutes] = timeString.split(":").slice(0, 2);
-  return `${hours}:${minutes}`;
-}
 
 /**
  * Capitalizes the first letter of a day name for display
@@ -25,7 +16,7 @@ function capitalizeDay(day: string): string {
 
 /**
  * AssignmentCard component displays a single assignment
- * Shows yard name and time range
+ * Shows yard name only (time removed as it may be inaccurate after manual changes)
  */
 function AssignmentCard({ assignment }: { assignment: Assignment }) {
   return (
@@ -35,55 +26,10 @@ function AssignmentCard({ assignment }: { assignment: Assignment }) {
           <div className="text-sm font-semibold leading-tight text-foreground truncate">
             {assignment.car_yard_name}
           </div>
-          <div className="mt-1 text-xs font-medium text-muted-foreground">
-            {formatTime(assignment.start_time)} -{" "}
-            {formatTime(assignment.finish_time)}
-          </div>
         </div>
       </div>
     </div>
   );
-}
-
-/**
- * Calculates total hours for an employee from assignments
- * This calculates hours directly from assignment start/end times
- */
-function calculateTotalHoursFromAssignments(assignments: Assignment[]): number {
-  if (!assignments || assignments.length === 0) return 0;
-
-  let totalHours = 0;
-
-  assignments.forEach((assignment) => {
-    const duration = getShiftDurationHours(
-      assignment.start_time,
-      assignment.finish_time
-    );
-    totalHours += duration.decimalFormat;
-  });
-
-  return totalHours;
-}
-
-/**
- * Calculates total hours for an employee from stats (fallback)
- */
-function calculateTotalHoursFromStats(
-  employeeId: number,
-  stats?: ScheduleStats
-): number | null {
-  if (!stats?.hours_per_employee_day) return null;
-
-  const prefix = `emp_${employeeId}_day_`;
-  let total = 0;
-
-  for (const [key, hours] of Object.entries(stats.hours_per_employee_day)) {
-    if (key.startsWith(prefix)) {
-      total += hours;
-    }
-  }
-
-  return total > 0 ? total : null;
 }
 
 /**
@@ -116,8 +62,6 @@ function EmployeeScheduleCard({
 
   // Calculate total assignments for summary
   const totalAssignments = assignments.length;
-  // Calculate hours directly from assignments (more reliable when roster is edited)
-  const totalHours = calculateTotalHoursFromAssignments(assignments);
 
   return (
     <Card className="mb-4 border shadow-sm hover:shadow-md transition-shadow bg-gray-200/50">
@@ -127,11 +71,6 @@ function EmployeeScheduleCard({
             {employeeName}
           </CardTitle>
           <div className="flex flex-col items-end gap-1">
-            {totalHours > 0 && (
-              <span className="text-sm font-semibold text-foreground">
-                ~{totalHours.toFixed(1)}h
-              </span>
-            )}
             <span className="text-xs font-medium text-muted-foreground">
               {totalAssignments}{" "}
               {totalAssignments === 1 ? "assignment" : "assignments"}

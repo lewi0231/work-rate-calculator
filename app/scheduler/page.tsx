@@ -5,6 +5,10 @@ import EmployeeAvailabilityDisplay from "@/components/employee-availability-disp
 import GeneralSettingsDisplay from "@/components/general-settings-display";
 import { RosterDisplaySheet } from "@/components/roster-display-sheet";
 import { Button } from "@/components/ui/button";
+import {
+  loadSchedulerState,
+  useSchedulerPersistence,
+} from "@/hooks/use-scheduler-persistence";
 import { generateRoster } from "@/lib/actions";
 import { DAYS_OF_WEEK } from "@/lib/constants";
 import {
@@ -15,25 +19,70 @@ import {
   ScheduleResponse,
 } from "@/lib/scheduler";
 import { Calendar, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+// Default state - moved outside component to avoid recreation on each render
+const defaultState = {
+  workers: payload.employees,
+  carYards: payload.car_yards,
+  maxHoursPerDay: payload.max_hours_per_day ?? 6.0,
+  earliestStartTime: payload.earliest_start_time ?? "06:00:00",
+  maxRadius: payload.max_radius ?? 20,
+};
+
 const SchedulerPage = () => {
+  // Load saved state on mount
   const [workers, setWorkers] = useState<ScheduleRequestPayload["employees"]>(
-    payload.employees
+    () => {
+      const saved = loadSchedulerState(defaultState);
+      return saved?.workers ?? defaultState.workers;
+    }
   );
   const [isLoading, setIsLoading] = useState(false);
 
-  const [carYards, setCarYards] = useState(payload.car_yards);
-  const [maxHoursPerDay, setMaxHoursPerDay] = useState(
-    payload.max_hours_per_day ?? 6.0
-  );
-  const [earliestStartTime, setEarliestStartTime] = useState(
-    payload.earliest_start_time ?? "06:00:00"
-  );
-  const [maxRadius, setMaxRadius] = useState(payload.max_radius ?? 20);
+  const [carYards, setCarYards] = useState(() => {
+    const saved = loadSchedulerState(defaultState);
+    return saved?.carYards ?? defaultState.carYards;
+  });
+  const [maxHoursPerDay, setMaxHoursPerDay] = useState(() => {
+    const saved = loadSchedulerState(defaultState);
+    return saved?.maxHoursPerDay ?? defaultState.maxHoursPerDay;
+  });
+  const [earliestStartTime, setEarliestStartTime] = useState(() => {
+    const saved = loadSchedulerState(defaultState);
+    return saved?.earliestStartTime ?? defaultState.earliestStartTime;
+  });
+  const [maxRadius, setMaxRadius] = useState(() => {
+    const saved = loadSchedulerState(defaultState);
+    return saved?.maxRadius ?? defaultState.maxRadius;
+  });
   const [rosterDisplayIsOpen, setRosterDisplayIsOpen] = useState(false);
   const [rosterData, setRosterData] = useState<ScheduleResponse | null>(null);
+
+  // Load saved state from localStorage on client mount (after SSR)
+  useEffect(() => {
+    const saved = loadSchedulerState(defaultState);
+    if (saved) {
+      setWorkers(saved.workers);
+      setCarYards(saved.carYards);
+      setMaxHoursPerDay(saved.maxHoursPerDay);
+      setEarliestStartTime(saved.earliestStartTime);
+      setMaxRadius(saved.maxRadius);
+    }
+  }, []); // Only run once on mount
+
+  // Auto-save state changes to localStorage
+  useSchedulerPersistence(
+    {
+      workers,
+      carYards,
+      maxHoursPerDay,
+      earliestStartTime,
+      maxRadius,
+    },
+    defaultState
+  );
 
   const handleUpdateWorker = (
     workerId: number,
