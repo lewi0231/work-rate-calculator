@@ -11,7 +11,7 @@ import { DAYS_OF_WEEK } from "@/lib/constants";
 import { DayOfWeek, DayRoster, Employee, YardSchedule } from "@/lib/scheduler";
 import { cn } from "@/lib/utils";
 import { GripVertical, Plus, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type RosterTimetableProps = {
   days: DayRoster[];
@@ -81,17 +81,38 @@ function YardCard({
   };
 
   const handleDragStart = (e: React.DragEvent) => {
+    console.log("[Drag] Start - YardCard", {
+      yardId: yard.car_yard_id,
+      yardName: yard.car_yard_name,
+      fromDay: day,
+      workers: yard.workers,
+      hasOnMoveShift: !!onMoveShift,
+    });
     setIsDragging(true);
     e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData(
-      "application/json",
-      JSON.stringify({ yard, fromDay: day })
-    );
+    const dragData = { yard, fromDay: day };
+    const dataString = JSON.stringify(dragData);
+    e.dataTransfer.setData("application/json", dataString);
+    console.log("[Drag] Data set in dataTransfer", {
+      dataString,
+      dataTransferTypes: Array.from(e.dataTransfer.types),
+    });
     // Browser will automatically create a drag image from the element
     // No need to manually set drag image - it can cause issues with React components
   };
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (e: React.DragEvent) => {
+    const dropEffect = e.dataTransfer.dropEffect;
+    const wasSuccessful = dropEffect === "move";
+    console.log("[Drag] End - YardCard", {
+      yardId: yard.car_yard_id,
+      yardName: yard.car_yard_name,
+      dropEffect,
+      wasSuccessful,
+      note: wasSuccessful
+        ? "Drop appears successful"
+        : "Drop may have been cancelled or failed",
+    });
     setIsDragging(false);
   };
 
@@ -204,16 +225,26 @@ function DropZone({
   return (
     <div
       className={cn(
-        "h-2 w-full transition-all duration-150 cursor-pointer",
-        isActive && "h-8"
+        "w-full transition-all duration-150 cursor-pointer flex items-center justify-center rounded-md",
+        "border border-dashed border-transparent",
+        // Small height when not active to minimize gaps between cards
+        isActive ? "h-12 border-primary bg-primary/5" : "h-2"
       )}
+      onDragEnter={(e) => {
+        // Ensure we can receive drops when entering
+        e.preventDefault();
+        e.stopPropagation();
+      }}
       onDragOver={onDragOver}
       onDrop={onDrop}
-    >
-      {isActive && (
-        <div className="h-1.5 w-full bg-primary rounded-full mt-3 shadow-lg" />
-      )}
-    </div>
+      onDragLeave={(e) => {
+        // Log when leaving drop zone for debugging
+        console.log("[Drag] Leaving DropZone", {
+          relatedTarget: e.relatedTarget,
+          currentTarget: e.currentTarget,
+        });
+      }}
+    />
   );
 }
 
@@ -234,10 +265,18 @@ export function RosterTimetable({
     index: number | null;
   }>({ day: null, index: null });
 
+  // Track if a drop was successful to help debug
+  const dropSuccessfulRef = useRef(false);
+
   // Set up global drag end listener to clean up state
   useEffect(() => {
-    const handleGlobalDragEnd = () => {
+    const handleGlobalDragEnd = (e: DragEvent) => {
+      console.log("[Drag] Global drag end - Cleaning up state", {
+        dropEffect: e.dataTransfer?.dropEffect,
+        dropWasSuccessful: dropSuccessfulRef.current,
+      });
       setDragState({ day: null, index: null });
+      dropSuccessfulRef.current = false;
     };
 
     document.addEventListener("dragend", handleGlobalDragEnd);
@@ -264,9 +303,22 @@ export function RosterTimetable({
     index?: number
   ) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation(); // Stop propagation so column handler doesn't interfere
     e.dataTransfer.dropEffect = "move";
-    setDragState({ day, index: index ?? null });
+    const newState = { day, index: index ?? null };
+    const stateChanged =
+      dragState.day !== day || dragState.index !== (index ?? null);
+    // Only log when entering a new drop zone to reduce noise
+    if (stateChanged) {
+      console.log("[Drag] Entering DropZone", {
+        targetDay: day,
+        targetIndex: index ?? null,
+        previousZone: dragState.day
+          ? `${dragState.day}:${dragState.index}`
+          : "none",
+      });
+    }
+    setDragState(newState);
   };
 
   const handleDrop = (
@@ -274,21 +326,51 @@ export function RosterTimetable({
     toDay: DayOfWeek,
     targetIndex?: number
   ) => {
+    console.log("[Drag] ✅ Drop event FIRED", {
+      toDay,
+      targetIndex,
+      dataTransferTypes: Array.from(e.dataTransfer.types),
+      hasOnMoveShift: !!onMoveShift,
+    });
+
     e.preventDefault();
     e.stopPropagation();
     setDragState({ day: null, index: null });
 
     try {
-      const data = JSON.parse(e.dataTransfer.getData("application/json")) as {
+      const rawData = e.dataTransfer.getData("application/json");
+
+      if (!rawData) {
+        console.error("[Drag] ❌ Drop - No data found in dataTransfer");
+        return;
+      }
+
+      const data = JSON.parse(rawData) as {
         yard: YardSchedule;
         fromDay: DayOfWeek;
       };
 
       if (data.yard && data.fromDay && onMoveShift) {
+        console.log("[Drag] ✅ Drop - Calling onMoveShift", {
+          from: `${data.fromDay}`,
+          to: `${toDay}`,
+          index: targetIndex,
+          yard: data.yard.car_yard_name,
+        });
         onMoveShift(data.yard, data.fromDay, toDay, targetIndex);
+        dropSuccessfulRef.current = true;
+        console.log("[Drag] ✅ Drop - onMoveShift completed successfully");
+      } else {
+        console.warn("[Drag] ❌ Drop - Missing required data or callback", {
+          hasYard: !!data.yard,
+          hasFromDay: !!data.fromDay,
+          hasOnMoveShift: !!onMoveShift,
+        });
       }
     } catch (error) {
-      console.warn("Failed to parse drag data:", error);
+      console.error("[Drag] ❌ Drop - Failed to parse drag data", {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 
@@ -308,9 +390,25 @@ export function RosterTimetable({
             <div
               className="flex-1 space-y-0 overflow-y-auto min-h-[200px] rounded-md"
               onDragOver={(e) => {
-                // Column-level drag over handler to ensure drops work properly
+                // Column-level drag over handler to allow drops
+                // Only preventDefault - don't stopPropagation so child drop zones can receive events
                 e.preventDefault();
-                e.stopPropagation();
+              }}
+              onDrop={(e) => {
+                // Fallback drop handler - if drop doesn't land on a specific drop zone,
+                // use the current drag state to determine where to drop
+                if (dragState.day === day && dragState.index !== null) {
+                  console.log("[Drag] Fallback drop on column container", {
+                    day,
+                    targetIndex: dragState.index,
+                  });
+                  handleDrop(e, day as DayOfWeek, dragState.index);
+                } else {
+                  console.log("[Drag] Drop on column but no active drop zone", {
+                    day,
+                    dragState,
+                  });
+                }
               }}
             >
               {yards.length > 0 ? (
@@ -322,7 +420,7 @@ export function RosterTimetable({
                     isActive={dragState.day === day && dragState.index === 0}
                   />
                   {yards.map((yard, index) => (
-                    <div key={yard.car_yard_id}>
+                    <div key={`${day}-${yard.car_yard_id}-${index}`}>
                       <YardCard
                         yard={yard}
                         day={day as DayOfWeek}
