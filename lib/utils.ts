@@ -135,7 +135,7 @@ export async function downloadExcel(data: DayRoster[]) {
         const workersList =
           yard.workers.length > 0 ? yard.workers.join(", ") : "None";
 
-        const cellValue = `${yard.car_yard_name}\nTime: ${timeRange}\nWorkers: ${workersList}`;
+        const cellValue = `${yard.car_yard_name}\nWorkers: ${workersList}`;
 
         row.getCell(colIndex + 1).value = cellValue;
         row.getCell(colIndex + 1).alignment = {
