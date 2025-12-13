@@ -32,35 +32,25 @@ const defaultState = {
 };
 
 const SchedulerPage = () => {
-  // Load saved state on mount
+  // Always start with default state to avoid hydration mismatches
+  // We'll load from localStorage in useEffect after mount
   const [workers, setWorkers] = useState<ScheduleRequestPayload["employees"]>(
-    () => {
-      const saved = loadSchedulerState(defaultState);
-      return saved?.workers ?? defaultState.workers;
-    }
+    defaultState.workers
   );
   const [isLoading, setIsLoading] = useState(false);
-
-  const [carYards, setCarYards] = useState(() => {
-    const saved = loadSchedulerState(defaultState);
-    return saved?.carYards ?? defaultState.carYards;
-  });
-  const [maxHoursPerDay, setMaxHoursPerDay] = useState(() => {
-    const saved = loadSchedulerState(defaultState);
-    return saved?.maxHoursPerDay ?? defaultState.maxHoursPerDay;
-  });
-  const [earliestStartTime, setEarliestStartTime] = useState(() => {
-    const saved = loadSchedulerState(defaultState);
-    return saved?.earliestStartTime ?? defaultState.earliestStartTime;
-  });
-  const [maxRadius, setMaxRadius] = useState(() => {
-    const saved = loadSchedulerState(defaultState);
-    return saved?.maxRadius ?? defaultState.maxRadius;
-  });
+  const [carYards, setCarYards] = useState(defaultState.carYards);
+  const [maxHoursPerDay, setMaxHoursPerDay] = useState(
+    defaultState.maxHoursPerDay
+  );
+  const [earliestStartTime, setEarliestStartTime] = useState(
+    defaultState.earliestStartTime
+  );
+  const [maxRadius, setMaxRadius] = useState(defaultState.maxRadius);
   const [rosterDisplayIsOpen, setRosterDisplayIsOpen] = useState(false);
   const [rosterData, setRosterData] = useState<ScheduleResponse | null>(null);
 
   // Load saved state from localStorage on client mount (after SSR)
+  // This ensures server and client render the same initial state
   useEffect(() => {
     const saved = loadSchedulerState(defaultState);
     if (saved) {
